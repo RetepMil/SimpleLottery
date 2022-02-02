@@ -2,7 +2,7 @@ pragma solidity ^0.4.15;
 
 contract Lottery {
 
-    uint constant TICKET_PRICE = 100;
+    uint constant TICKET_PRICE = 1000 wei;
     uint ticketingCloses;
 
     address owner;
@@ -13,11 +13,13 @@ contract Lottery {
         require(msg.sender == owner);
         _;
     }
+
     function Lottery (uint duration) public {
         owner = msg.sender;
         ticketingCloses = now + duration;
     }
     
+    // Use this function to buy a ticket
     function buyTicket (address buyerAddress) payable public {
 	    require(msg.value >= TICKET_PRICE);
         addTicketAddress(buyerAddress);
@@ -47,7 +49,17 @@ contract Lottery {
 	    winner = tickets[uint(rand) % tickets.length];
     }
 
-    function destroy ()  public onlyOwner {
+    function checkIfWin (address ticketAddress) public view returns (bool) {
+        return (winner == ticketAddress ? true : false);
+    }
+
+    function sendWinnerPrice () private {
+	    require(winner != address(0));
+        
+        winner.transfer(1000 * tickets.length);
+    }
+
+    function destroy () public onlyOwner {
         selfdestruct(owner);
     }
 
