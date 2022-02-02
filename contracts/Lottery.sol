@@ -5,17 +5,10 @@ contract Lottery {
     uint constant TICKET_PRICE = 1000 wei;
     uint ticketingCloses;
 
-    address owner;
     address[] tickets;
     address winner;
 
-    modifier onlyOwner {
-        require(msg.sender == owner);
-        _;
-    }
-
     function Lottery (uint duration) public {
-        owner = msg.sender;
         ticketingCloses = now + duration;
     }
     
@@ -57,10 +50,6 @@ contract Lottery {
 	    require(winner != address(0));
         
         winner.transfer(1000 * tickets.length);
-    }
-
-    function destroy () public onlyOwner {
-        selfdestruct(owner);
     }
 
 }
