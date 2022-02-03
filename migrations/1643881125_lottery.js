@@ -2,7 +2,7 @@ var fs = require("fs");
 var Lottery = artifacts.require("Lottery");
 
 module.exports = function (deployer, network) {
-  var duration = 5; // seconds
+  var duration = 12; // seconds
   var contractInstance;
 
   deployer.deploy(Lottery, duration);
@@ -10,13 +10,13 @@ module.exports = function (deployer, network) {
 
   web3.eth
     .getAccounts()
-    .then((accounts) => {
-      console.log(accounts);
-      return accounts;
+    .then((addresses) => {
+      console.log(addresses);
+      return addresses;
     })
-    .then((accounts) =>
+    .then((addresses) =>
       // unlock account for geth
-      accounts.forEach((address) => {
+      addresses.forEach((address) => {
         if (network == "rinkeby" || network == "mainnet") {
           var password = fs.readFileSync("password", "utf8").split("\n")[i];
           web3.personal.unlockAccount(address, password);
@@ -25,4 +25,13 @@ module.exports = function (deployer, network) {
         contractInstance.methods.buyTicket(address);
       })
     );
+
+  /* .then(() => {
+      setTimeout(() => {
+        console.log("let's wait for 5 seconds...");
+      }, 5000);
+    })
+    .then(() => {
+      contractInstance.methods.drawWinner();
+    }); */
 };
