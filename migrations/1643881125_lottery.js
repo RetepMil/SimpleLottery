@@ -2,7 +2,7 @@ var fs = require("fs");
 var Lottery = artifacts.require("Lottery");
 
 module.exports = function (deployer, network) {
-  var duration = 12; // seconds
+  var duration = 5; // seconds
   var contractInstance;
   var ticketPrice = 1e18;
 

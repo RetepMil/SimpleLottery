@@ -15,6 +15,7 @@ contract Lottery {
     // Use this function to buy a ticket
     function buyTicket (address buyerAddress) payable public {
 	    require(msg.value >= TICKET_PRICE);
+
         addTicketAddress(buyerAddress);
     }
 
@@ -31,11 +32,13 @@ contract Lottery {
     } //use case : random(0x7543def) % 100;
 
     function drawWinner () public {
-	    require(block.timestamp > ticketingCloses + 5 minutes);
+	    require(block.timestamp > ticketingCloses + 5 seconds);
 	    require(winner == address(0));
 
 	    bytes32 seed = keccak256(abi.encodePacked(blockhash(block.number-1)));
 	    winner = payable(tickets[random(uint(seed)) % tickets.length]);
+
+        // sendWinnerPrice();
     }
 
     function checkIfWin (address ticketAddress) public view returns (bool) {
