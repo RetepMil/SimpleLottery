@@ -4,6 +4,7 @@ var Lottery = artifacts.require("Lottery");
 module.exports = function (deployer, network) {
   var duration = 12; // seconds
   var contractInstance;
+  var ticketPrice = 1e18;
 
   deployer.deploy(Lottery, duration);
   Lottery.deployed().then((instance) => (contractInstance = instance));
@@ -21,8 +22,13 @@ module.exports = function (deployer, network) {
           var password = fs.readFileSync("password", "utf8").split("\n")[i];
           web3.personal.unlockAccount(address, password);
         }
-        // buy lottery ticket
-        contractInstance.methods.buyTicket(address);
+
+        // send ether and request ticket purchase
+        contractInstance.buyTicket.sendTransaction(address, {
+          to: contractInstance.address,
+          from: address,
+          value: ticketPrice,
+        });
       })
     );
 
@@ -34,4 +40,6 @@ module.exports = function (deployer, network) {
     .then(() => {
       contractInstance.methods.drawWinner();
     }); */
+
+  // Lottery.deployed().then(instance => lot = instance)
 };
