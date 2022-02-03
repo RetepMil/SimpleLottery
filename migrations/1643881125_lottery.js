@@ -2,7 +2,7 @@ var fs = require("fs");
 var Lottery = artifacts.require("Lottery");
 
 module.exports = function (deployer, network) {
-  var duration = 3600 * 1 * 1; // seconds * hour * day
+  var duration = 5; // seconds
   var contractInstance;
 
   deployer.deploy(Lottery, duration);
@@ -15,12 +15,14 @@ module.exports = function (deployer, network) {
       return accounts;
     })
     .then((accounts) =>
+      // unlock account for geth
       accounts.forEach((address) => {
-        // unlock account for geth
         if (network == "rinkeby" || network == "mainnet") {
           var password = fs.readFileSync("password", "utf8").split("\n")[i];
           web3.personal.unlockAccount(address, password);
         }
+        // buy lottery ticket
+        contractInstance.methods.buyTicket(address);
       })
     );
 };

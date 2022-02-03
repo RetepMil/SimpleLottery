@@ -2,7 +2,7 @@ pragma solidity >0.6.0;
 
 contract Lottery {
 
-    uint constant TICKET_PRICE = 1000 wei;
+    uint constant TICKET_PRICE = 1 ether;
     uint ticketingCloses;
 
     address[] tickets;
@@ -45,7 +45,7 @@ contract Lottery {
     function sendWinnerPrice () payable public {
 	    require(winner != address(0));
         
-        payable(winner).transfer(1000 * tickets.length);
+        payable(winner).transfer(1 ether * tickets.length);
     }
 
 }
