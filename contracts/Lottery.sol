@@ -1,4 +1,4 @@
-pragma solidity ^0.4.15;
+pragma solidity >0.6.0;
 
 contract Lottery {
 
@@ -6,10 +6,10 @@ contract Lottery {
     uint ticketingCloses;
 
     address[] tickets;
-    address winner;
+    address payable winner;
 
-    function Lottery (uint duration) public {
-        ticketingCloses = now + duration;
+    constructor (uint duration) public {
+        ticketingCloses = block.timestamp + duration;
     }
     
     // Use this function to buy a ticket
@@ -22,34 +22,30 @@ contract Lottery {
         tickets.push(addressNumber);
     }
 
-    function getTicketAddress () public returns (address[] addresses) {
+    function getTicketAddress () public view returns (address[] memory addresses) {
         addresses = tickets;
     }
 
-    function random(uint seed) public view returns (uint) {    
-        return uint(
-             keccak256(block.blockhash(block.number-1), seed) 
-        );
+    function random(uint seed) public pure returns (uint) {  
+        return uint(keccak256(abi.encodePacked(seed)));
     } //use case : random(0x7543def) % 100;
 
     function drawWinner () public {
-	    require(now > ticketingCloses + 5 minutes);
+	    require(block.timestamp > ticketingCloses + 5 minutes);
 	    require(winner == address(0));
 
-	    bytes32 rand = keccak256(
-	    	block.blockhash(block.number-1)
-	    );
-	    winner = tickets[uint(rand) % tickets.length];
+	    bytes32 seed = keccak256(abi.encodePacked(blockhash(block.number-1)));
+	    winner = payable(tickets[random(uint(seed)) % tickets.length]);
     }
 
     function checkIfWin (address ticketAddress) public view returns (bool) {
         return (winner == ticketAddress ? true : false);
     }
 
-    function sendWinnerPrice () private {
+    function sendWinnerPrice () payable public {
 	    require(winner != address(0));
         
-        winner.transfer(1000 * tickets.length);
+        payable(winner).transfer(1000 * tickets.length);
     }
 
 }
