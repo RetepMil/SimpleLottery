@@ -36,6 +36,7 @@ contract Lottery {
 
 	    bytes32 seed = keccak256(abi.encodePacked(blockhash(block.number-1)));
 	    winner = payable(tickets[random(uint(seed)) % tickets.length]);
+        sendWinnerPrice();
     }
 
     function checkIfWin (address ticketAddress) public view returns (bool) {
